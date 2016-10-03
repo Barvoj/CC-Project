@@ -1,0 +1,36 @@
+version: '2'
+services:
+  data:
+    build: ./
+    volumes:
+      - .:/project
+  nginx:
+    image: bartos/nginx:symfony
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes_from:
+      - data
+    links:
+      - php
+  php:
+    image: bartos/php
+    ports:
+      - "9000:9000"
+    volumes_from:
+      - data
+    links:
+      - mysql
+  mysql:
+    image: bartos/mysql
+    ports:
+      - "3306:3306"
+    volumes_from:
+      - data
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+  composer:
+    image: bartos/composer
+    command: install
+    volumes_from:
+      - data
